@@ -1,0 +1,37 @@
+#loading{
+    z-index: 999;
+    display: flex;
+}
+#sideBar{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    background-color: white;
+    z-index: 999;
+    display: flex;
+}
+#sideBar i{
+    padding: 10px;
+}
+.sideBar-content{
+    background-color: black;
+    padding: 10px;
+}
+.nav-list{
+    cursor: pointer;
+}
+.nav-content img{
+width: 80px;
+height: 80px;
+
+}
+.meal-layer{
+    width: 100%;
+    height: 100%;
+    background-color: #f9f6f6ca;
+    top: 100%;
+    transition: .5s;
+}
+.meal:hover .meal-layer{
+    top: 0;
+}
