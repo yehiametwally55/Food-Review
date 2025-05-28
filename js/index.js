@@ -17,14 +17,25 @@ $("#sideBar i").click(function () {
 let myData = document.querySelector("#myData");
 // start when load the WebSite
 $(document).ready(() => {
-    searchByName("");
+    displayInitialMeals("");
     $("#loading").fadeOut(500);
 })
-// End when load the webSite
 
+async function displayInitialMeals() {
+    $("#loading").fadeIn(100);
+    let response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=`);
+    response = await response.json();
+
+    if (response.meals) {
+        displayMeals(response.meals);
+    }
+    $("#loading").fadeOut(500);
+}
+// End when load the webSite
 
 // start ingredients Functions
 async function ingredientsAPI(){
+    document.querySelector("#search").innerHTML = ""; 
     myData.innerHTML = "";
     $("#loading").fadeIn(100);
     let response = await fetch("https://www.themealdb.com/api/json/v1/1/list.php?i=list");
@@ -33,6 +44,7 @@ async function ingredientsAPI(){
     $("#loading").fadeOut(500);
 }
 async function ingredientsMealAPI(ingredient){
+    document.querySelector("#search").innerHTML = ""; 
     myData.innerHTML = "";
     $("#loading").fadeIn(100);
     let response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`);
@@ -40,16 +52,21 @@ async function ingredientsMealAPI(ingredient){
     displayMeals(response.meals.slice(0, 20));
     $("#loading").fadeOut(500);
 }
-function displayIngredients(ingredients){
+function displayIngredients(ingredients) {
+    document.querySelector("#search").innerHTML = ""; 
+
     let cartoona = "";
-    for (let i = 0; i < ingredients.length; i++) {
+
+    const ingredientsToDisplay = ingredients.slice(0, 20); 
+
+    for (let i = 0; i < ingredientsToDisplay.length; i++) {
         cartoona += `
         <div class="col-md-3">
-                <div onclick="ingredientsMealAPI('${ingredients[i].strIngredient}')" class="rounded-2 text-center cursor-pointer">
-                        <i class="fa-solid fa-drumstick-bite fa-4x"></i>
-                        <h3>${ingredients[i].strIngredient}</h3>
-                        <p>${ingredients[i].strDescription}</p>
-                </div>
+            <div onclick="ingredientsMealAPI('${ingredientsToDisplay[i].strIngredient}')" class="ingredient-card text-center text-white rounded-2">
+                <i class="fa-solid fa-drumstick-bite fa-4x"></i>
+                <h3 class="h5">${ingredientsToDisplay[i].strIngredient}</h3>
+                <p class="ingredient-desc">${ingredientsToDisplay[i].strDescription}</p>
+            </div>
         </div> `
     }
     myData.innerHTML = cartoona;
@@ -61,6 +78,7 @@ function displayIngredients(ingredients){
 
 // start Area Meals Functions
 async function AreaAPI(){
+    document.querySelector("#search").innerHTML = ""; 
     myData.innerHTML = "";
     $("#loading").fadeIn(100);
     let response = await fetch("https://www.themealdb.com/api/json/v1/1/list.php?a=list");
@@ -70,6 +88,7 @@ async function AreaAPI(){
 }
 
 async function AreaMealsAPI(Area){
+    document.querySelector("#search").innerHTML = ""; 
     myData.innerHTML = "";
     $("#loading").fadeIn(100);
     let response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?a=${Area}`);
@@ -78,6 +97,7 @@ async function AreaMealsAPI(Area){
     $("#loading").fadeOut(500);
 }
 function displayAreas(Areas){
+    document.querySelector("#search").innerHTML = ""; 
     let cartoona = "";
     for (let i = 0; i < Areas.length; i++) {
         cartoona += `<div class="col-md-3">
@@ -94,54 +114,59 @@ function displayAreas(Areas){
 
 // www.themealdb.com/api/json/v1/1/search.php?f=a
 // Start Search Functions
+function performSearch() {
+    const searchInput = document.getElementById("searchInputName");
+    const mealName = searchInput.value;
+    searchByName(mealName);
+}
+
 async function searchByName(Name) {
+    if (Name.trim() === "") {
+        return; 
+    }
     myData.innerHTML = "";
     $("#loading").fadeIn(100);
     let response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${Name}`);
-    response = await response.json()
+    response = await response.json();
 
     if(response.meals){
         displayMeals(response.meals);
-        $("#loading").fadeOut(500);
-    }else{
+    } else {
         displayMeals([]);
     }
-}
-async function SearchByLetter(Letter) {
-    myData.innerHTML = ""
-    $("#loading").fadeIn(100);
-    let response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${Letter}`)
-    response = await response.json()
-
-     if(response.meals){
-        displayMeals(response.meals);
-        $("#loading").fadeOut(500);
-    }else{
-        displayMeals([]);
-    }
+    $("#loading").fadeOut(500);
 }
 
 function Search() {
-    let search = document.querySelector("#search");
-    search.innerHTML = ` <div class="row py-4 ">
-        <div class="col-md-6 ">
-            <input onkeyup="searchByName(this.value)" class="form-control bg-transparent text-white" type="text" placeholder="Search By Name">
-        </div>
-        <div class="col-md-6">
-            <input onkeyup="SearchByLetter(this.value)" maxlength="1" class="form-control bg-transparent text-white" type="text" placeholder="Search By First Letter">
-        </div>
-    </div>`
+    let searchContainer = document.querySelector("#search");
 
-    myData.innerHTML = ""
+    searchContainer.innerHTML = `
+    <div class="row py-4">
+        <div class="col-md-8 offset-md-2">
+            <div class="input-group">
+                <input id="searchInputName" type="text" class="form-control bg-transparent text-white" placeholder="Search for a Meal...">
+                <button onclick="performSearch()" class="btn btn-outline-danger">
+                    <i class="fa fa-search"></i> Search
+                </button>
+            </div>
+        </div>
+    </div>`;
+
+    myData.innerHTML = "";
+
+    document.getElementById("searchInputName").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            performSearch();
+        }
+    });
 }
 
 // End Search Functions
 
-
-
 // www.themealdb.com/api/json/v1/1/categories.php
 // Start Meal Categories functions
 async function categoriesAPI(){
+    document.querySelector("#search").innerHTML = ""; 
     myData.innerHTML = "";
     $("#loading").fadeIn(100);
     let response = await fetch(`https://www.themealdb.com/api/json/v1/1/categories.php`);
@@ -150,6 +175,7 @@ async function categoriesAPI(){
     $("#loading").fadeOut(500);
 }
 function DisplayCategories(Categories){
+    document.querySelector("#search").innerHTML = ""; 
     let cartoona = "";
     for (let i = 0; i < Categories.length; i++) {
         cartoona += `<div class="col-md-3">
@@ -166,6 +192,7 @@ function DisplayCategories(Categories){
 }
 // www.themealdb.com/api/json/v1/1/filter.php?c=Seafood
 async function CategoryMeal(Category){
+    document.querySelector("#search").innerHTML = ""; 
     myData.innerHTML = "";
     $("#loading").fadeIn(100);
     let response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${Category}`)
@@ -179,6 +206,7 @@ async function CategoryMeal(Category){
 
 // Start Meals View functions
 async function DetailsAPI(ID) {
+
     myData.innerHTML = "";
     $("#loading").fadeIn(100);
     let response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${ID}`);
@@ -188,7 +216,7 @@ async function DetailsAPI(ID) {
     $("#loading").fadeOut(500);
 }
 function displayMealDetails(Meal){
-
+    document.querySelector("#search").innerHTML = ""; 
     let Details = document.querySelector("#Details");
     let MealIngredient = ``;
     let tags = Meal.strTags;
@@ -293,7 +321,10 @@ function ContactUs() {
                 </div>
             </div>
         </div>
-        <button id="submitBtn" disabled class="btn btn-outline-danger px-2 mt-3">Submit</button>
+        <div id="successMessage" class="alert alert-success mt-4 d-none">
+            <strong>Success!</strong> Your message has been submitted. Thank you!
+        </div>
+       <button id="submitBtn" onclick="handleSubmit()" disabled class="btn btn-outline-danger px-4 mt-4">Submit</button>
     </div>
 </div> `;
 
@@ -305,8 +336,18 @@ function ContactUs() {
     document.querySelector("#Password").addEventListener("focus",() => { flag5 = true; });
     document.querySelector("#ConfirmedPassword").addEventListener("focus",() => { flag6 = true;} );
 }
-// End contact Us functions 
 
+function handleSubmit() {
+        
+        const formContainer = document.querySelector("#contactUs .container");
+        const successDiv = document.getElementById("successMessage");
+        formContainer.innerHTML = `
+            <div class="alert alert-success mt-4">
+                <strong>Success!</strong> Your message has been submitted. Thank you!
+            </div>
+        `;
+    }
+// End contact Us functions 
 
 
 // Start Validation Functions
