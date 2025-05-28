@@ -10,6 +10,9 @@ $("#sideBar i").click(function () {
         $("#sideBar").animate({left: 0}, 500);
     }
 });
+$(".nav-list li").click(function() {
+    $("#sideBar").animate({left: -sideBarPosition}, 500);
+});
 // Side navbar End
 
 
