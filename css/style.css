@@ -35,6 +35,9 @@ height: 80px;
 .meal:hover .meal-layer{
     top: 0;
 }
+.meal {
+    cursor: pointer;
+}
 
 #contactUs {
     min-height: 100vh;
