@@ -280,6 +280,7 @@ function displayMeals(Meals){
 // Start ContactUS Functions
 let flag1 , flag2 , flag3 , flag4, flag5 , flag6 = false;
 function ContactUs() {
+    document.querySelector("#search").innerHTML = ""; 
     myData.innerHTML = `
     <div class="d-flex g-3 justify-content-center align-items-center" id="contactUs">
     <div class="container w-75 text-center">
