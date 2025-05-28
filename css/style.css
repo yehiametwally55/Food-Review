@@ -31,9 +31,11 @@ height: 80px;
     background-color: #f9f6f6ca;
     top: 100%;
     transition: .5s;
+    cursor: pointer;
 }
 .meal:hover .meal-layer{
     top: 0;
+    cursor: pointer;
 }
 .meal {
     cursor: pointer;
